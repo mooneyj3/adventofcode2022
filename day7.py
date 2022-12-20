@@ -82,38 +82,27 @@ def display_dir_sizes(fdir, indent="", size_limit=100000):
     return size_ref
 
 # part 2: 
-# The total disk space available to the filesystem is 70000000. 
+# The total disk space available to the filesystem is  70000000. 
 # To run the update, you need unused space of at least 30000000. 
+#   30000000
 # You need to find a directory you can delete that will free up enough space to run the update.
-def find_dir_to_delete(fdir, target_size, best):
+def find_dir_to_delete(fdir, update_size, total_size):
+    
+    search_list = [fdir]
+    best = fdir
+    available_space = total_size - fdir.size
+    target_size = update_size - available_space
 
-    target = best
+    while search_list != []:
+        current_node = search_list.pop(0)
+        # look for dir's and append to search_list
+        for fname, fref in current_node.children.items():
+            if fref.type == "dir":
+                search_list.append(fref)
+        if current_node.size < best.size and current_node.size >= target_size:
+            best = current_node
     
-    for fname, fref in fdir.children.items():
-        if fref.type == "dir":
-            if fref.size >= target_size and fref.size < best.size:
-                target = fref
-            
-            next = find_dir_to_delete(fref, target_size, best)
-            if next.size >= target_size and next.size < best.size:
-                target = next
-    
-    return target
-
-    # # if dir < target_size
-    # # if dir < best
-    # best = fdir
-    
-    # for fname, fref in fdir.children.items():
-    #     if fref.type == "dir":
-    #         if fref.size < target_size:
-    #             continue
-    #         else:
-    #             next = find_dir_to_delete(fref, target_size)
-    #             if next.size >=
-    #         best = find_dir_to_delete(fref, target_size, best)
-    
-    # return best
+    return best
 
 
 
@@ -124,7 +113,7 @@ if __name__ == "__main__":
         root_dir = process_commands(f)
         solution = display_dir_sizes(root_dir)
         print("DAY 7 (part 1) total size : %d " % solution)
-        dir_to_delete = find_dir_to_delete(root_dir, 30000000, root_dir)
+        dir_to_delete = find_dir_to_delete(root_dir, 30000000, 70000000)
         print("DAY 7 (part 2) dir to delete : %s with %d " % (dir_to_delete.name, dir_to_delete.size))
         
     
