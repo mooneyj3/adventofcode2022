@@ -79,6 +79,52 @@ def count_visible_trees(grid):
     # return sum of vis_grid
     return sum(sum(vis_grid,[]))
 
+# PART 2
+def get_highest_tree_score(grid):
+    highest_tree_score = 0
+    w = len(grid[0]) # width / columns
+    h = len(grid) # height / rows
+
+    for row in range(1, h-1):
+        for col in range(1, w-1):
+            current_tree = grid[row][col]
+
+            # look left
+            left_s = 0
+            for i in range(1,col + 1):
+                left_s += 1
+                if current_tree <= grid[row][col-i]:
+                    break
+            
+            # look right
+            right_s = 0
+            for i in range(1,w - col):
+                right_s += 1
+                if current_tree <= grid[row][col+i]:
+                    break
+
+            # look up 
+            up_s = 0
+            for i in range(1, row + 1):
+                up_s += 1
+                if current_tree <= grid[row-i][col]:
+                    break
+
+            # look down
+            down_s = 0
+            for i in range(1, h - row):
+                down_s += 1
+                if current_tree <= grid[row+i][col]:
+                    break
+
+            tree_score = left_s * right_s * up_s * down_s
+            if tree_score > highest_tree_score:
+                highest_tree_score = tree_score
+                # print(highest_tree_score)
+    
+
+    return highest_tree_score
+
 
 if __name__ == "__main__":
     input_file = "day8.input"
@@ -86,6 +132,9 @@ if __name__ == "__main__":
         tree_grid = build_grid(f)
     
     #Part 1
-    # print(tree_grid)
     solution = count_visible_trees(tree_grid)
     print("DAY 8 (part 1) visible trees : %d " % solution)
+
+    #Part 2
+    solution = get_highest_tree_score(tree_grid)
+    print("DAY 8 (part 2) highest tree score : %d " % solution)
